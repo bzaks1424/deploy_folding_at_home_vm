@@ -1,36 +1,41 @@
 
 ###############################################################################################
 # Path to OVF
-$ovfPath = ".\VMware-FaH-Appliance_1.0.0.ova"
+$ovfPath = "VMware-FaH-Appliance_1.0.0.ova"
 ###############################################################################################
 ## MUST BE A VCENTER - ESXI HOSTS WILL NOT WORK ##
-# vCenter Credentials.
+# vCenter Credentials
 $vcenter = "vcenter01.lab.michaelpmcd.com"
 $vcenter_user = "administrator@vsphere.local"
 $vcenter_password = "VMware1!"
 ###############################################################################################
-# Deployment Environment Details
+# Basic Deployment Environment Details
+$esxi_deployer_hostname = "esxi01.lab.michaelpmcd.com" # esxi host FQDN or IP
 $datastore_name = "SSD_SHARE"
-$vm_deploy_hostname = "esxi01.lab.michaelpmcd.com"
 $network_name = "VM Network"
 ###############################################################################################
-# By Default: Guest Hostname and VM will have the same exact name.
+# Basic Guest Details
+## By Default: Guest Hostname and VM will have the same exact name.
 $guest_hostname = "vFAH01"
 $guest_root_password = "VMware1!"
 ###############################################################################################
-# Folding@Home Details
+# Basic Folding@Home Details
 $fah_username = "MyUser"
 $fah_team = "52737"
 $fah_passkey = ""
 $fah_mode = "medium" # Needs to be light, medium, full
 $fah_gpu = $false # Or $true
 ###############################################################################################
-# VM Guest OPTIONAL PARAMETERS
-# VM Name if you don't want the guest hostname to match the VM name
+### OPTIONAL PARAMETERS ###
+###############################################################################################
+# Optional Deployment Environment Details
+## VM Name if you don't want the guest hostname to match the VM name
 $vm_name = ""
-# Run Asynchronously
+## Run Deploy Asynchronously
 $run_async = $false
-# IP Address Details
+###############################################################################################
+# Optional Guest Details
+## IP Address Details
 $guest_ip_address = ""
 $guest_netmask = "" # Probably should be "24 (255.255.255.0)" if you'resetting manually
 $guest_gateway = ""
@@ -45,7 +50,7 @@ $guest_no_proxy = ""
 $guest_proxy_username = ""
 $guest_proxy_password = ""
 ###############################################################################################
-# Folding@Home OPTIONAL PARAMETERS
+# Optional Folding@Home Details
 $fah_web_remote_networks = ""
 $fah_remote_networks = ""
 $fah_remote_pass = ""
@@ -55,7 +60,12 @@ $fah_remote_pass = ""
 ################################# DO NOT EDIT BELOW THIS LINE #################################
 ###############################################################################################
 # What will this VM actually be named?
-$actual_vm_name = ($vm_name.Trim().Length -gt 0) ? $vm_name : $guest_hostname
+if($vm_name.Trim().Length -gt 0) {
+	$actual_vm_name =  $vm_name
+}
+else {
+	$actual_vm_name =  $guest_hostname
+}
 ###############################################################################################
 # Double Check that the OVF Actually Exists
 if( -not (Test-Path $ovfPath)) {
@@ -64,7 +74,7 @@ if( -not (Test-Path $ovfPath)) {
 ###############################################################################################
 # Double Check those Octets!
 $octet = '25[0-5]|2[0-4][0-9]|[0-1]?[0-9]{1,2}'
-if( -not ($guest_netmask -match "\d{1,2} \($octet\.$octet\.$octet\.$octet\)")) {
+if($vm_name.Trim().Length -gt 0 -and ( -not ($guest_netmask -match "\d{1,2} \($octet\.$octet\.$octet\.$octet\)"))) {
 		throw ("ERROR! Invalid Netmask! '$guest_netmask' is not similar to 24 (255.255.255.0)")
 }
 ###############################################################################################
@@ -76,13 +86,16 @@ if( -not ($good_fah_modes -match $fah_mode)) {
 ###############################################################################################
 # Establish Connection to vCenter
 $connection = Connect-ViServer -Server $vcenter -User $vcenter_user -Password $vcenter_password
+$connection
 # If the connection is valid
 if($connection) {
+	Write-Host "Connected"
 	# Validate Location of Deployment
-	$vmhost = Get-VMHost -Name $vm_deploy_hostname
-	$ds = Get-Datastore -Name $datastore_name
-	$network = Get-VirtualPortGroup -Name $network_name
-	if($vmhost -and $ds -and $network) {
+	$vmhost = Get-VMHost -Name $esxi_deployer_hostname
+	$ds = Get-Datastore -Name $datastore_name -VMHost $vmhost
+	# TODO: Get VDPG, VPG, or LPG
+	# $network = Get-VirtualPortGroup -Name $network_name -VMHost $vmhost
+	if($vmhost -and $ds) { 	# -and $network
 		# Get OVF Config from File (Requires vCenter)
 		$ovfConfig = Get-OvfConfiguration $ovfPath
 		# Set Networking Details
@@ -93,7 +106,7 @@ if($connection) {
 		
 		# Write Out Info
 		Write-Host "Deploying Guest: $guest_hostname in VM $actual_vm_name"
-		Write-Host "    VMHost: $vm_deploy_hostname"
+		Write-Host "    VMHost: $esxi_deployer_hostname"
 		Write-Host "    Network: $network_name"
 		Write-Host "    Datastore: $datastore_name"
 		Write-Host "    Guest Root Password Set"
