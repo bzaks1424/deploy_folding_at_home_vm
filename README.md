@@ -1,13 +1,13 @@
 # Deploy Folding@Home VM PowerCLI Script
 
-This is a basic script designed around deploying the VMware custom-made [Folding@Home PhotonOS OVA](http://veducate.co.uk/VMware-FaH-Appliance_1.0.0.ova)
+This is a basic script designed around deploying the VMware custom-made [VMware Appliance for Folding@Home](https://flings.vmware.com/vmware-appliance-for-folding-home)
 
 Depending on how you want to deploy your appliance - you have a plethora of options. This README.md will take you through the various editable sections of the script.
 
 ## Path to OVF
 The Path to the OVF is largely relative to the script. Just like any file - if can reference something directly in the directory its in.
 **Example 1** - OVA is in same directory as deployment script:
-> $ovfPath = "VMware-FaH-Appliance_1.0.0.ova" 
+> $ovfPath = "VMware-FaH-Appliance_1.0.0.ova"
 
 **Example 2** - OVA is in another directory all together.
 > $ovfPath = "C:\my_magic_dir\VMware-FaH-Appliance_1.0.0.ova"
@@ -19,7 +19,7 @@ Due to the nature of one of our most important commands in the script [Get-OvfCo
 There are 3 primary deployment considerations to use when deploying an OVA / OVF.
  - Datastore
  - Deploy Host
-The code will require you to specifically call out the appropriate Deploy Host (the host doing the work) and attached Datastore. 
+The code will require you to specifically call out the appropriate Deploy Host (the host doing the work) and attached Datastore.
 *The code currently does not check your network name. Please confirm that manually.*
 ```
 $esxi_deployer_hostname = "esxi01.lab.corp.local" # esxi host FQDN or IP
@@ -34,7 +34,7 @@ $guest_root_password = "VMware1!"
 ```
 
 ## Basic Folding@Home Details
-These are your **personal** details for your Folding@Home. 
+These are your **personal** details for your Folding@Home.
 
  - **$fah_username** is your personal username.
  - **$fah_team** is the team you're trying to Fold with. Obviously you want VMware: 52737
@@ -94,7 +94,7 @@ $guest_proxy_password = "VMware1!"
 
 ## Optional Folding@Home Details
 Leaving any of these details empty will just use defaults. (No remote client connectivity, or web server)
-Folding at home has some great built in security measures. 
+Folding at home has some great built in security measures.
 You have the ability to limit web server from communicating directly with the VM. That webserver is hosted on port 7396.
 ```
 $fah_web_remote_networks = "192.168.1.0/24, 10.1.1.2"
