@@ -1,4 +1,4 @@
 # OVF/OVA
-.ova
-.ovf
+*.ova
+*.ovf
 
