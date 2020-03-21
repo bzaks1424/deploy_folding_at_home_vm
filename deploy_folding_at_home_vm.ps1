@@ -1,7 +1,7 @@
-
+Write-Host "WARNING - This script has been deprecated in favor of using deploy_single_fah_vm.ps1" -ForegroundColor "Yellow"
 ###############################################################################################
 # Path to OVF
-$ovfPath = "VMware-FaH-Appliance_1.0.0.ova"
+$ovfPath = "VMware-Appliance-FaH_1.0.0.ova"
 ###############################################################################################
 ## MUST BE A VCENTER - ESXI HOSTS WILL NOT WORK ##
 # vCenter Credentials
@@ -74,7 +74,7 @@ if( -not (Test-Path $ovfPath)) {
 ###############################################################################################
 # Double Check those Octets!
 $octet = '25[0-5]|2[0-4][0-9]|[0-1]?[0-9]{1,2}'
-if($vm_name.Trim().Length -gt 0 -and ( -not ($guest_netmask -match "\d{1,2} \($octet\.$octet\.$octet\.$octet\)"))) {
+if(($guest_netmask.Trim().Length -gt 0) -and ( -not ($guest_netmask -match "\d{1,2} \(($octet)\.($octet)\.($octet)\.($octet)\)"))) {
 		throw ("ERROR! Invalid Netmask! '$guest_netmask' is not similar to 24 (255.255.255.0)")
 }
 ###############################################################################################
@@ -103,44 +103,44 @@ if($connection) {
 		# Set guest Hostname Details:
 		$ovfConfig.Common.guestinfo.hostname.Value = $guest_hostname
 		$ovfConfig.Common.guestinfo.root_password.Value = $guest_root_password
-		
+
 		# Write Out Info
 		Write-Host "Deploying Guest: $guest_hostname in VM $actual_vm_name"
 		Write-Host "    VMHost: $esxi_deployer_hostname"
 		Write-Host "    Network: $network_name"
 		Write-Host "    Datastore: $datastore_name"
 		Write-Host "    Guest Root Password Set"
-		
+
 		# DHCP Or Static?
 		if($guest_ip_address -ne "") {
 			Write-Host "    Static IP Address Set"
 			Write-Host "        $guest_ip_address"
 			Write-Host "        $guest_netmask"
 			Write-Host "        $guest_gateway"
-			
+
 			$ovfConfig.Common.guestinfo.ipaddress.Value = $guest_ip_address
 			$ovfConfig.Common.guestinfo.netmask.Value = $guest_netmask
 			$ovfConfig.Common.guestinfo.gateway.Value = $guest_gateway
 		}
-		
+
 		# Custom DNS
 		if($guest_dns -ne "") {
 			Write-Host "    Custom DNS: $guest_dns"
 			$ovfConfig.Common.guestinfo.dns.Value = $guest_dns
 		}
-		
+
 		# Custom Domain
 		if($guest_domain -ne "") {
 			Write-Host "    Domain: $guest_domain"
 			$ovfConfig.Common.guestinfo.domain.Value = $guest_domain
-		} 
-		
+		}
+
 		# NTP
 		if($guest_domain -ne "") {
 			Write-Host "    NTP: $guest_ntp"
 			$ovfConfig.Common.guestinfo.ntp.Value = $guest_ntp
-		} 
-		
+		}
+
 		# Proxy Info
 		if(($guest_http_proxy -ne "") -or ($guest_https_proxy -ne "")) {
 			Write-Host "    Http Proxy: $guest_http_proxy"
@@ -158,7 +158,7 @@ if($connection) {
 				$ovfConfig.Common.guestinfo.no_proxy.Value = $guest_no_proxy
 			}
 		}
-		
+
 		Write-Host ""
 		Write-Host "Setting Folding@Home Details:"
 		Write-Host "    F@H Username: $fah_username"
@@ -171,20 +171,20 @@ if($connection) {
 		$ovfConfig.Common.guestinfo.fah_passkey.Value = $fah_passkey
 		$ovfConfig.Common.guestinfo.fah_mode.Value = $fah_mode
 		$ovfConfig.Common.guestinfo.fah_gpu.Value = $fah_gpu
-		
+
 		# Remote FAH Web Client
 		if($fah_web_remote_networks -ne "") {
 			Write-Host "    Allowed Networks to access F@H web: $fah_web_remote_networks"
 			$ovfConfig.Common.guestinfo.fah_web_remote_networks.Value = $fah_web_remote_networks
 		}
-		
+
 		# Remote FAHControl
 		if($fah_remote_networks -ne "") {
 			Write-Host "    Allowed Networks to access FAHControl: $fah_remote_networks"
 			$ovfConfig.Common.guestinfo.fah_remote_networks.Value = $fah_remote_networks
-			
+
 			# Remote Passkey
-			if($fah_remote_pass -ne "") { 
+			if($fah_remote_pass -ne "") {
 				Write-Host "    F@H Remote Passkey Set"
 				$ovfConfig.Common.guestinfo.fah_remote_pass.Value = $fah_remote_pass
 			}

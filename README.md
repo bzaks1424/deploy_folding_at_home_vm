@@ -1,6 +1,6 @@
 # Deploy Folding@Home VM PowerCLI Script
 
-This is a basic script designed around deploying the VMware custom-made [VMware Appliance for Folding@Home](https://flings.vmware.com/vmware-appliance-for-folding-home)
+This is a basic script designed around deploying the [VMware Appliance for Folding@Home](https://flings.vmware.com/vmware-appliance-for-folding-home)
 
 Depending on how you want to deploy your appliance - you have a plethora of options. This README.md will take you through the various editable sections of the script.
 
@@ -13,14 +13,14 @@ The Path to the OVF is largely relative to the script. Just like any file - if c
 > $ovfPath = "C:\my_magic_dir\VMware-FaH-Appliance_1.0.0.ova"
 
 ## vCenter Credentials
-Due to the nature of one of our most important commands in the script [Get-OvfConfiguration]([https://code.vmware.com/docs/10197/cmdlet-reference/doc/Get-OvfConfiguration.html](https://code.vmware.com/docs/10197/cmdlet-reference/doc/Get-OvfConfiguration.html)), we have to connect to a vCenter.  As of today - that's a username and password. *Future revisions may make using Credentials easier.*
+Due to the nature of one of our most important commands in the script [Get-OvfConfiguration]([https://code.vmware.com/docs/10197/cmdlet-reference/doc/Get-OvfConfiguration.html](https://code.vmware.com/docs/10197/cmdlet-reference/doc/Get-OvfConfiguration.html)), we have to connect to a vCenter.  As of today - that's a username and password.
 
 ## Basic Deployment Environment Details
 There are 3 primary deployment considerations to use when deploying an OVA / OVF.
  - Datastore
+ - Network
  - Deploy Host
-The code will require you to specifically call out the appropriate Deploy Host (the host doing the work) and attached Datastore.
-*The code currently does not check your network name. Please confirm that manually.*
+The code will require you to specifically call out the appropriate Deploy Host (the host doing the work) and attached Datastore and validate the network exists.
 ```
 $esxi_deployer_hostname = "esxi01.lab.corp.local" # esxi host FQDN or IP
 $datastore_name = "SHARE"
@@ -29,7 +29,7 @@ $network_name = "VM Network"
 ## Basic Guest Details
 By default - giving a guest a hostname will also name that VM the same thing. You can modify the VM name in the Optional Deployment Environment Details. You also will want to set a default root password for your VM.
 ```
-$guest_hostname = "vFAH01"
+$guest_hostname = "fahclient0"
 $guest_root_password = "VMware1!"
 ```
 
