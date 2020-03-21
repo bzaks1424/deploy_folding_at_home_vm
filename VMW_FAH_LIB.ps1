@@ -261,11 +261,10 @@ Function Set-VMOvfProperty {
 Function Validate-CIDR-Mask {
   param(
       [Parameter(Mandatory=$true)]
-      [ValidateNotNullOrEmpty()]
       $CIDRMask
   )
   $octet = '25[0-5]|2[0-4][0-9]|[0-1]?[0-9]{1,2}'
-  if(($guest_netmask.Trim().Length -gt 0) -and ( -not ($guest_netmask -match "\d{1,2} \(($octet)\.($octet)\.($octet)\.($octet)\)"))) {
-      throw ("ERROR! Invalid Netmask! '$guest_netmask' is not similar to 24 (255.255.255.0)")
+  if(($CIDRMask -ne $null) -and ($CIDRMask.Trim().Length -gt 0) -and ( -not ($CIDRMask -match "\d{1,2} \(($octet)\.($octet)\.($octet)\.($octet)\)"))) {
+      throw ("ERROR! Invalid Netmask! '$CIDRMask' is not similar to 24 (255.255.255.0)")
   }
 }
