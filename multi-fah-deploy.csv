@@ -1,2 +1,5 @@
 Hostname, [IP Address], [CIDR (Netmask)], [Gateway], [VM Name]
+fahclient0
 fahclient1, 192.168.1.241, 24 (255.255.255.0), 192.168.1.254
+fahclient2, 192.168.1.241, 24 (255.255.255.0), 192.168.1.254, fah-client-2
+fahclient3,,,,fah-client-3
