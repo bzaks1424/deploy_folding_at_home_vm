@@ -69,8 +69,8 @@ Function Deploy-FAH {
 	if(!$vm){
 		$vm = Import-VApp $OvfPath -VMHost $vmhost -Datastore $ds -Name $VMName -Confirm:$false
 	}
-	else {
-		throw "Error! $VMName already exists in inventory!"
+	elseif($vm.PowerState -eq "PoweredOn") {
+		throw "Error! $VMName already exists and is Powered On in inventory!"
 	}
 
 	return Set-VMSize -VM $vm -NumCpu $NumCpu -MemoryGB $MemoryGB
@@ -166,8 +166,15 @@ Function Set-VMNetwork {
 		if($net.Length -ne 1) {
 			throw ("ERROR! Invalid number of networks found when searching $NetworkName (" + $net.Length + ") should be 1!")
 		}
-		$net_adapter = Get-NetworkAdapter -VM $VM
-		$set = Set-NetworkAdapter -NetworkAdapter $net_adapter -NetworkName $net -StartConnected:$true -Confirm:$false
+		$setSplat = @{}
+		if($net.NetworkType -eq "Distributed") {
+			$setSplat["Portgroup"] = (Get-VDPortgroup -Name $NetworkName)
+		}
+		else{
+			$setSplat["NetworkName"] = $NetworkName
+			$setSplat["StartConnected"] = $true
+		}
+		$set = Set-NetworkAdapter -NetworkAdapter (Get-NetworkAdapter -VM $VM) @setSplat -Confirm:$false
 
 		return Get-VM $VM
 }
