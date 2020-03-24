@@ -162,7 +162,7 @@ Function Set-VMNetwork {
 			$NetworkName
 		)
 
-		$net = @(Get-VirtualNetwork -Name $NetworkName)
+		$net = @(Get-VirtualNetwork -Name $NetworkName)[0]
 		if($net.Length -ne 1) {
 			throw ("ERROR! Invalid number of networks found when searching $NetworkName (" + $net.Length + ") should be 1!")
 		}
