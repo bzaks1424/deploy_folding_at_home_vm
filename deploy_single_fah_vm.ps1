@@ -8,14 +8,14 @@ function Main {
 	## MUST BE A VCENTER - ESXI HOSTS WILL NOT WORK ##
 	# vCenter Credentials
 	$viserver = @{
-			"Server" = "vcenter01.lab.corp.local"
+			"Server" = "vcenter01.corp.local"
 			"User" = "administrator@vsphere.local"
 			"Password" = "VMware1!"
 			# "Credentials" = $myCreds
 	}
 	###############################################################################################
 	# Basic Deployment Environment Details
-	$esxi_deployer_hostname = "esxi01.lab.corp.local" # esxi host FQDN or IP
+	$esxi_deployer_hostname = "esxi01.corp.local" # esxi host FQDN or IP
 	$datastore_name = "SSD_SHARE"
 	$network_name = "VM Network"
 	$vm_num_cpu = "MATCH" # Needs to be MATCH or a number
@@ -46,7 +46,7 @@ function Main {
 	$guest_gateway = "192.168.1.254"
 	## DNS, Domain, and NTP Details
 	$guest_dns = "192.168.1.254"
-	$guest_domain = "lab.corp.local"
+	$guest_domain = "corp.local"
 	$guest_ntp = "pool.ntp.org"
 	## Proxy Details
 	$guest_http_proxy = ""
@@ -81,8 +81,7 @@ function Main {
 	# Double Check the folding at home Mode
 	Validate-FAH-Mode -FahMode $fah_mode
 	###############################################################################################
-	# Establish Connection to vCenter
-	$singleton = Disconnect-VIServer $viserver['Server'] -Confirm:$false
+	# Connection Splat
 	$connection = Connect-ViServer @viserver
 	# If the connection is valid
 	if($connection) {
