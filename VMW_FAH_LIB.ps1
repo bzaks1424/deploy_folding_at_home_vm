@@ -55,7 +55,7 @@ Function Deploy-FAH {
 		throw ("ERROR! Cannot find OVA or OVF in '$OvfPath'")
 	}
 	# Doublecheck we can find the VMHost
-	$vmhost = Get-VMHost -Name $EsxiHostName
+	$vmhost = @(Get-VMHost -Name $EsxiHostName)[0]
 	# Doublecheck we can find the Datastore and that its attached to VMHost
 	$ds = Get-Datastore -Name $DatastoreName -VMHost $vmhost -ea SilentlyContinue
 	if(!$ds) {
@@ -162,7 +162,7 @@ Function Set-VMNetwork {
 			$NetworkName
 		)
 
-		$net = Get-VirtualNetwork -Name $NetworkName
+		$net = @(Get-VirtualNetwork -Name $NetworkName)
 		if($net.Length -ne 1) {
 			throw ("ERROR! Invalid number of networks found when searching $NetworkName (" + $net.Length + ") should be 1!")
 		}
