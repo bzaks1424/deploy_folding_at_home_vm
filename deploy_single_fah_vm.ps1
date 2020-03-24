@@ -8,14 +8,14 @@ function Main {
 	## MUST BE A VCENTER - ESXI HOSTS WILL NOT WORK ##
 	# vCenter Credentials
 	$viserver = @{
-			"Server" = "vcenter01.lab.michaelpmcd.com"
+			"Server" = "vcenter01.lab.corp.local"
 			"User" = "administrator@vsphere.local"
 			"Password" = "VMware1!"
 			# "Credentials" = $myCreds
 	}
 	###############################################################################################
 	# Basic Deployment Environment Details
-	$esxi_deployer_hostname = "esxi01.lab.michaelpmcd.com" # esxi host FQDN or IP
+	$esxi_deployer_hostname = "esxi01.lab.corp.local" # esxi host FQDN or IP
 	$datastore_name = "SSD_SHARE"
 	$network_name = "VM Network"
 	$vm_num_cpu = "MATCH" # Needs to be MATCH or a number
@@ -23,11 +23,11 @@ function Main {
 	###############################################################################################
 	# Basic Guest Details
 	## By Default: Guest Hostname and VM will have the same exact name.
-	$guest_hostname = "FAH-4C-client0"
+	$guest_hostname = "fahclient0"
 	$guest_root_password = "VMware1!"
 	###############################################################################################
 	# Basic Folding@Home Details
-	$fah_username = "bzaks1424"
+	$fah_username = "user"
 	$fah_team = "52737"
 	$fah_passkey = ""
 	$fah_mode = "full" # Needs to be light, medium, full
@@ -41,12 +41,12 @@ function Main {
 	###############################################################################################
 	# Optional Guest Details
 	## IP Address Details - Leave Empty for DHCP
-	$guest_ip_address = ""
-	$guest_netmask = "" # Probably should be "24 (255.255.255.0)" if you'resetting manually
-	$guest_gateway = ""
+	$guest_ip_address = "192.168.1.242"
+	$guest_netmask = "24 (255.255.255.0)" # Probably should be "24 (255.255.255.0)" if you'resetting manually
+	$guest_gateway = "192.168.1.254"
 	## DNS, Domain, and NTP Details
-	$guest_dns = ""
-	$guest_domain = "lab.michaelpmcd.com"
+	$guest_dns = "192.168.1.254"
+	$guest_domain = "lab.corp.local"
 	$guest_ntp = "pool.ntp.org"
 	## Proxy Details
 	$guest_http_proxy = ""
@@ -75,18 +75,14 @@ function Main {
 		$actual_vm_name =  $guest_hostname
 	}
 	###############################################################################################
-
-	###############################################################################################
 	# Double Check those Octets!
 	Validate-CIDR-Mask -CIDRMask $guest_netmask
 	###############################################################################################
 	# Double Check the folding at home Mode
-	$good_fah_modes = ('light', 'medium', 'full')
-	if( -not ($good_fah_modes -match $fah_mode)) {
-		throw ("ERROR! Invalid Folding@Home Operating Mode ($fah_mode)! Must be 'light', 'medium' or 'full'")
-	}
+	Validate-FAH-Mode -FahMode $fah_mode
 	###############################################################################################
 	# Establish Connection to vCenter
+	$singleton = Disconnect-VIServer $viserver['Server'] -Confirm:$false
 	$connection = Connect-ViServer @viserver
 	# If the connection is valid
 	if($connection) {

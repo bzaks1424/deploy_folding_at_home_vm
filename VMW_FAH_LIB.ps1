@@ -168,7 +168,7 @@ Function Set-VMNetwork {
 		}
 		$setSplat = @{}
 		if($net.NetworkType -eq "Distributed") {
-			$setSplat["Portgroup"] = (Get-VDPortgroup -Name $NetworkName)
+			$setSplat["Portgroup"] = @(Get-VDPortgroup -Name $NetworkName)[0]
 		}
 		else{
 			$setSplat["NetworkName"] = $NetworkName
@@ -186,7 +186,7 @@ Function Set-HWValue($Value, $Comparator, $Max){
 	if(($Value -like "MATCH") -or ($Value -gt $Max)) {
 		$Value = $Max
 	}
-	else {
+	elseif($Value -lt 0) {
 		$Value = 1
 	}
 	return $Value
@@ -233,8 +233,13 @@ Function Set-VMOvfProperty {
         Set-VMOvfProperty -VM (Get-VM -Name "vesxi65-1-1") -ovfChanges $ovfPropertyChanges
 #>
     param(
-        [Parameter(Mandatory=$true)]$VM,
-        [Parameter(Mandatory=$true)]$ovfChanges
+        [Parameter(Mandatory=$true)]
+				[ValidateNotNullOrEmpty()]
+				$VM,
+
+        [Parameter(Mandatory=$true)]
+				[ValidateNotNullOrEmpty()]
+				$ovfChanges
     )
 
     # Retrieve existing OVF properties from VM
@@ -268,10 +273,23 @@ Function Set-VMOvfProperty {
 Function Validate-CIDR-Mask {
   param(
       [Parameter(Mandatory=$true)]
+			[ValidateNotNullOrEmpty()]
       $CIDRMask
   )
   $octet = '25[0-5]|2[0-4][0-9]|[0-1]?[0-9]{1,2}'
   if(($CIDRMask -ne $null) -and ($CIDRMask.Trim().Length -gt 0) -and ( -not ($CIDRMask -match "\d{1,2} \(($octet)\.($octet)\.($octet)\.($octet)\)"))) {
       throw ("ERROR! Invalid Netmask! '$CIDRMask' is not similar to 24 (255.255.255.0)")
   }
+}
+
+Function Validate-FAH-Mode {
+	param(
+			[Parameter(Mandatory=$true)]
+			[ValidateNotNullOrEmpty()]
+			$FahMode
+	)
+	$good_fah_modes = ('light', 'medium', 'full')
+	if( -not ($good_fah_modes -match $FahMode)) {
+		throw ("ERROR! Invalid Folding@Home Operating Mode ($FahMode)! Must be 'light', 'medium' or 'full'")
+	}
 }
