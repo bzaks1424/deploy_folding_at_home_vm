@@ -8,14 +8,12 @@ function Main {
 	## MUST BE A VCENTER - ESXI HOSTS WILL NOT WORK ##
 	# vCenter Credentials
 	$viserver = @{
-			"Server" = "vcenter01.corp.local"
 			"User" = "administrator@vsphere.local"
 			"Password" = "VMware1!"
 			# "Credentials" = $myCreds
 	}
 	###############################################################################################
 	# Basic Deployment Environment Details
-	$esxi_deployer_hostname = "esxi01.corp.local" # esxi host FQDN or IP
 	$datastore_name = "SSD_SHARE"
 	$network_name = "VM Network"
 	$vm_num_cpu = "MATCH" # Needs to be MATCH or a number
@@ -23,7 +21,6 @@ function Main {
 	###############################################################################################
 	# Basic Guest Details
 	## By Default: Guest Hostname and VM will have the same exact name.
-	$guest_hostname = "fahclient0"
 	$guest_root_password = "VMware1!"
 	###############################################################################################
 	# Basic Folding@Home Details
@@ -46,7 +43,6 @@ function Main {
 	$guest_gateway = "192.168.1.254"
 	## DNS, Domain, and NTP Details
 	$guest_dns = "192.168.1.254"
-	$guest_domain = "corp.local"
 	$guest_ntp = "pool.ntp.org"
 	## Proxy Details
 	$guest_http_proxy = ""
@@ -94,6 +90,7 @@ function Main {
 			$ovfPropertyChanges = @{
 				"guestinfo.hostname" = $guest_hostname
 				"guestinfo.root_password" = $guest_root_password
+				"guestinfo.enable_ssh" = $guest_enable_ssh
 			}
 
 			# Customize the appliance!
@@ -154,6 +151,7 @@ function Main {
 			$ovfPropertyChanges["guestinfo.fah_team"] = ${fah_team}
 			$ovfPropertyChanges["guestinfo.fah_passkey"] = ${fah_passkey}
 			$ovfPropertyChanges["guestinfo.fah_mode"] = ${fah_mode}
+			$ovfPropertyChanges["guestinfo.fah_console_stats"] = ${guest_console_stats}
 
 			# $gpu = Get-VMHostPciDevice -VMHost $esxi_deployer_hostname -DeviceClass "DisplayController"
 			# $gpu.VendorName

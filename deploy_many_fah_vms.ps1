@@ -3,20 +3,17 @@
 function Main {
 	###############################################################################################
 	# Path to OVF
-	$ovfPath = "VMware-Appliance-FaH_1.0.0.ova"
 	$csvPath = "multi-fah-deploy.csv"
 	###############################################################################################
 	## MUST BE A VCENTER - ESXI HOSTS WILL NOT WORK ##
 	# vCenter Credentials
 	$viserver = @{
-			"Server" = "vcenter01.corp.local"
 			"User" = "administrator@vsphere.local"
 			"Password" = "VMware1!"
 			# "Credentials" = $myCreds
 	}
 	###############################################################################################
 	# Basic Deployment Environment Details
-	$esxi_deployer_hostname = "esxi01.corp.local" # esxi host FQDN or IP
 	$datastore_name = "SSD_SHARE"
 	$network_name = "VM Network"
 	$vm_num_cpu = "MATCH" # Needs to be MATCH or a number
@@ -26,11 +23,11 @@ function Main {
 	###############################################################################################
 	# Basic Guest Details
 	$guest_root_password = "VMware1!"
+	$guest_enable_ssh = $true
+	$guest_console_stats = $true
 	###############################################################################################
 	# Basic Folding@Home Details
-	$fah_username = "user"
 	$fah_team = "52737"
-	$fah_passkey = ""
 	$fah_mode = "full" # Needs to be light, medium, full
 	$fah_gpu = $false # Or $true
 	###############################################################################################
@@ -38,7 +35,6 @@ function Main {
 	# Optional Guest Details
 	## DNS, Domain, and NTP Details
 	$guest_dns = "192.168.1.254"
-	$guest_domain = "corp.local"
 	$guest_ntp = "pool.ntp.org"
 	## Proxy Details
 	$guest_http_proxy = ""
@@ -100,6 +96,7 @@ function Main {
 				$ovfPropertyChanges = @{
 				  "guestinfo.hostname" = $vtd.Hostname
 				  "guestinfo.root_password" = $guest_root_password
+					"guestinfo.enable_ssh" = $guest_enable_ssh
 				}
 				# Customize the appliance!
 				if($vtd."[IP Address]" -ne $null -and $vtd."[IP Address]".Trim().Length -gt 0) {
@@ -164,6 +161,7 @@ function Main {
 				$ovfPropertyChanges["guestinfo.fah_team"] = ${fah_team}
 				$ovfPropertyChanges["guestinfo.fah_passkey"] = ${fah_passkey}
 				$ovfPropertyChanges["guestinfo.fah_mode"] = ${fah_mode}
+				$ovfPropertyChanges["guestinfo.fah_console_stats"] = ${guest_console_stats}
 
 				# $gpu = Get-VMHostPciDevice -VMHost $esxi_deployer_hostname -DeviceClass "DisplayController"
 				# $gpu.VendorName
