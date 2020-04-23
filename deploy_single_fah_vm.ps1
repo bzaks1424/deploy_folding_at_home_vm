@@ -3,11 +3,12 @@
 function Main {
 	###############################################################################################
 	# Path to OVF
-	$ovfPath = "VMware-Appliance-FaH_1.0.0.ova"
+	$ovfPath = "\Users\me\Downloads\VMware-Appliance-FaH_1.0.3.ova"
 	###############################################################################################
 	## MUST BE A VCENTER - ESXI HOSTS WILL NOT WORK ##
 	# vCenter Credentials
 	$viserver = @{
+			"Server" = "vcenter01.corp.local"
 			"User" = "administrator@vsphere.local"
 			"Password" = "VMware1!"
 			# "Credentials" = $myCreds
@@ -18,9 +19,11 @@ function Main {
 	$network_name = "VM Network"
 	$vm_num_cpu = "MATCH" # Needs to be MATCH or a number
 	$vm_memory_gb = 1 # Needs to be match or a number (will max @ 4 GB)
+	$esxi_deployer_hostname = "esxi01.corp.local"
 	###############################################################################################
 	# Basic Guest Details
 	## By Default: Guest Hostname and VM will have the same exact name.
+	$guest_hostname = "fahclient1"
 	$guest_root_password = "VMware1!"
 	###############################################################################################
 	# Basic Folding@Home Details
